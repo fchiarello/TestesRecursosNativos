@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class AlunoViewController: UIViewController, ImagePickerFotoSelecionada {
     
@@ -26,9 +27,17 @@ class AlunoViewController: UIViewController, ImagePickerFotoSelecionada {
     // MARK: - Atributos
     
     let imagePicker = ImagePicker()
+    var contexto: NSManagedObjectContext {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        
+        return appDelegate.persistentContainer.viewContext
+    }
+    
+    var aluno:Aluno?
+    
     
     // MARK: - View Lifecycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.arredondaView()
@@ -44,6 +53,15 @@ class AlunoViewController: UIViewController, ImagePickerFotoSelecionada {
     
     func setup() {
         imagePicker.delegate = self
+        
+        guard let alunoSelecionado = aluno else { return }
+        textFieldNome.text = alunoSelecionado.nome
+        textFieldNota.text = "\(alunoSelecionado.nota)"
+        textFieldSite.text = alunoSelecionado.site
+        textFieldEndereco.text = alunoSelecionado.endereco
+        textFieldTelefone.text = alunoSelecionado.telefone
+        imageAluno.image = alunoSelecionado.foto as? UIImage
+        
     }
     
     func arredondaView() {
@@ -92,4 +110,24 @@ class AlunoViewController: UIViewController, ImagePickerFotoSelecionada {
     }
     
     
+    @IBAction func buttonSalvar(_ sender: Any) {
+        
+        if aluno == nil {
+            aluno = Aluno(context: contexto)
+        }
+        
+        aluno?.nome = textFieldNome.text
+        aluno?.endereco = textFieldEndereco.text
+        aluno?.telefone = textFieldTelefone.text
+        aluno?.site = textFieldSite.text
+        aluno?.nota = (textFieldNota.text! as NSString).doubleValue
+        aluno?.foto = imageAluno.image
+        
+        do {
+            try contexto.save()
+            navigationController?.popViewController(animated: true)
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
 }
