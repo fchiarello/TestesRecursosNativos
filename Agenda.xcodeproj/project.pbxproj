@@ -15,6 +15,10 @@
 		03AA17661FC84353003CB2B8 /* HomeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AA17651FC84353003CB2B8 /* HomeTableViewController.swift */; };
 		03AA17681FC843B1003CB2B8 /* HomeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AA17671FC843B1003CB2B8 /* HomeTableViewCell.swift */; };
 		03AA176D1FC8515A003CB2B8 /* AlunoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03AA176C1FC8515A003CB2B8 /* AlunoViewController.swift */; };
+		C9269ED2234F5F3C00AA4A46 /* MenuOpcoesAlunos.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9269ED1234F5F3C00AA4A46 /* MenuOpcoesAlunos.swift */; };
+		C9269ED4234F687E00AA4A46 /* Mensagem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9269ED3234F687E00AA4A46 /* Mensagem.swift */; };
+		C9269ED6234F7B4900AA4A46 /* Localizacao.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9269ED5234F7B4900AA4A46 /* Localizacao.swift */; };
+		C9269ED9234F868000AA4A46 /* MapaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9269ED8234F868000AA4A46 /* MapaViewController.swift */; };
 		C99A1B7A234E0C0C000CEC0E /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C99A1B79234E0C0C000CEC0E /* ImagePicker.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,6 +33,10 @@
 		03AA17651FC84353003CB2B8 /* HomeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewController.swift; sourceTree = "<group>"; };
 		03AA17671FC843B1003CB2B8 /* HomeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTableViewCell.swift; sourceTree = "<group>"; };
 		03AA176C1FC8515A003CB2B8 /* AlunoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlunoViewController.swift; sourceTree = "<group>"; };
+		C9269ED1234F5F3C00AA4A46 /* MenuOpcoesAlunos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuOpcoesAlunos.swift; sourceTree = "<group>"; };
+		C9269ED3234F687E00AA4A46 /* Mensagem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mensagem.swift; sourceTree = "<group>"; };
+		C9269ED5234F7B4900AA4A46 /* Localizacao.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Localizacao.swift; sourceTree = "<group>"; };
+		C9269ED8234F868000AA4A46 /* MapaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapaViewController.swift; sourceTree = "<group>"; };
 		C99A1B79234E0C0C000CEC0E /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -64,6 +72,7 @@
 			children = (
 				03AA174D1FC84154003CB2B8 /* AppDelegate.swift */,
 				03AA17621FC8433E003CB2B8 /* Home */,
+				C9269ED7234F864000AA4A46 /* Mapa */,
 				03AA17691FC84A2D003CB2B8 /* Alunos */,
 				C99A1B76234E0B8F000CEC0E /* Components */,
 				03AA17511FC84154003CB2B8 /* Main.storyboard */,
@@ -124,10 +133,21 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		C9269ED7234F864000AA4A46 /* Mapa */ = {
+			isa = PBXGroup;
+			children = (
+				C9269ED8234F868000AA4A46 /* MapaViewController.swift */,
+			);
+			path = Mapa;
+			sourceTree = "<group>";
+		};
 		C99A1B76234E0B8F000CEC0E /* Components */ = {
 			isa = PBXGroup;
 			children = (
 				C99A1B79234E0C0C000CEC0E /* ImagePicker.swift */,
+				C9269ED1234F5F3C00AA4A46 /* MenuOpcoesAlunos.swift */,
+				C9269ED3234F687E00AA4A46 /* Mensagem.swift */,
+				C9269ED5234F7B4900AA4A46 /* Localizacao.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -209,7 +229,11 @@
 				03AA17561FC84154003CB2B8 /* Agenda.xcdatamodeld in Sources */,
 				C99A1B7A234E0C0C000CEC0E /* ImagePicker.swift in Sources */,
 				03AA17681FC843B1003CB2B8 /* HomeTableViewCell.swift in Sources */,
+				C9269ED2234F5F3C00AA4A46 /* MenuOpcoesAlunos.swift in Sources */,
+				C9269ED4234F687E00AA4A46 /* Mensagem.swift in Sources */,
+				C9269ED9234F868000AA4A46 /* MapaViewController.swift in Sources */,
 				03AA174E1FC84154003CB2B8 /* AppDelegate.swift in Sources */,
+				C9269ED6234F7B4900AA4A46 /* Localizacao.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

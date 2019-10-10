@@ -20,7 +20,7 @@ class HomeTableViewController: UITableViewController, UISearchBarDelegate, NSFet
         return appDelegate.persistentContainer.viewContext
     }
     var alunoViewController:AlunoViewController?
-    
+    let mensagem = Mensagem()
     
     
     // MARK: - View Lifecycle
@@ -71,6 +71,46 @@ class HomeTableViewController: UITableViewController, UISearchBarDelegate, NSFet
         }
     }
     
+    @objc func abrirActionSheet(_ longPress:UILongPressGestureRecognizer) {
+        if longPress.state == .began {
+            guard let alunoSelecionado = gerenciadorDeResultados?.fetchedObjects?[(longPress.view?.tag)!] else { return }
+            let menu = MenuOpcoesAlunos().configuraMenuOpcoesAluno { (opcao) in
+                switch opcao{
+                case .sms:
+                    if let componenteMensagem = self.mensagem.configuraSMS(alunoSelecionado){
+                        componenteMensagem.messageComposeDelegate = self.mensagem
+                        self.present(componenteMensagem, animated: true, completion: nil)
+                    }
+                    break
+                case .ligacao:
+                    guard let numeroAluno = alunoSelecionado.telefone else { return }
+                    if let urlFone = URL(string: "tel://\(numeroAluno)"), UIApplication.shared.canOpenURL(urlFone){
+                        UIApplication.shared.open(urlFone, options: [:], completionHandler: nil)
+                    }
+                    break
+                case .waze:
+                    if UIApplication.shared.canOpenURL(URL(string: "waze://")!) {
+                        guard let enderecoDoAluno = alunoSelecionado.endereco else { return }
+                        Localizacao().converteEnderecoEmCoordenadas(endereco: enderecoDoAluno) { (localizacaoEncontrada) in
+                            let latitude = String(describing: localizacaoEncontrada.location!.coordinate.latitude)
+                            let longitude = String(describing: localizacaoEncontrada.location!.coordinate.longitude)
+                            let urlWaze: String = "waze://?ll=\(latitude),\(longitude)&navigate=yes"
+                            UIApplication.shared.open(URL(string: urlWaze)!, options: [:], completionHandler: nil)
+                        }
+                    }
+                    break
+                case .mapa:
+                    let mapa = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "mapa") as! MapaViewController
+                    mapa.aluno = alunoSelecionado
+                    self.navigationController?.pushViewController(mapa, animated: true)
+                    break
+                }
+            }
+            self.present(menu, animated: true, completion: nil)
+        }
+
+    }
+    
     // MARK: - Table view data source
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -82,9 +122,12 @@ class HomeTableViewController: UITableViewController, UISearchBarDelegate, NSFet
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "celula-aluno", for: indexPath) as! HomeTableViewCell
         
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(abrirActionSheet))
+        
         guard let aluno = gerenciadorDeResultados?.fetchedObjects![indexPath.row] else { return cell }
         
         cell.configuraCelula(aluno)
+        cell.addGestureRecognizer(longPress)
         
         return cell
     }
