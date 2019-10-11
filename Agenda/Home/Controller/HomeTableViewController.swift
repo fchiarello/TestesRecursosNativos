@@ -71,6 +71,8 @@ class HomeTableViewController: UITableViewController, UISearchBarDelegate, NSFet
         }
     }
     
+    //MARK: - Actions
+    
     @objc func abrirActionSheet(_ longPress:UILongPressGestureRecognizer) {
         if longPress.state == .began {
             guard let alunoSelecionado = gerenciadorDeResultados?.fetchedObjects?[(longPress.view?.tag)!] else { return }
@@ -110,6 +112,18 @@ class HomeTableViewController: UITableViewController, UISearchBarDelegate, NSFet
         }
 
     }
+    
+    @IBAction func buttonCalculaMedia(_ sender: UIBarButtonItem) {
+        guard let listaDeAlunos = gerenciadorDeResultados?.fetchedObjects else { return }
+        CalculaMediaAPI().calculaMediaGeralDosAlunos(alunos: listaDeAlunos, sucesso: { (dicionario) in
+            if let alerta = Notificacoes().exibeNotificacaoDeMediaDosAlunos(dicionarioDeMedia: dicionario){
+                self.present(alerta, animated: true, completion: nil)
+            }
+        }) { (error) in
+            print(error.localizedDescription)
+        }
+    }
+    
     
     // MARK: - Table view data source
     
