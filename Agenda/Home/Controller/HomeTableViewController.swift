@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import SafariServices
 
 class HomeTableViewController: UITableViewController, UISearchBarDelegate, NSFetchedResultsControllerDelegate {
     
@@ -44,21 +45,33 @@ class HomeTableViewController: UITableViewController, UISearchBarDelegate, NSFet
         self.navigationItem.searchController = searchController
     }
     
-    func recuperaAluno(){
+    func recuperaAluno(_ filtro:String = ""){
         let pesquisaAluno: NSFetchRequest<Aluno> = Aluno.fetchRequest()
         let ordenaPorNome = NSSortDescriptor(key: "nome", ascending: true)
         pesquisaAluno.sortDescriptors = [ordenaPorNome]
         
+        if verificaFiltro(filtro) {
+            pesquisaAluno.predicate = filtraAluno(filtro)
+        }
+        
         gerenciadorDeResultados = NSFetchedResultsController(fetchRequest: pesquisaAluno, managedObjectContext: contexto, sectionNameKeyPath: nil, cacheName: nil)
-        
-        gerenciadorDeResultados?.delegate = self
-        
+                gerenciadorDeResultados?.delegate = self
         do {
             try gerenciadorDeResultados?.performFetch()
         } catch  {
             print(error.localizedDescription)
         }
-        
+    }
+    
+    func filtraAluno(_ filtro:String) -> NSPredicate {
+        return NSPredicate(format: "nome CONTAINS %@", filtro)
+    }
+    
+    func verificaFiltro(_ filtro:String) -> Bool {
+        if filtro.isEmpty {
+            return false
+        }
+        return true
     }
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
@@ -106,6 +119,18 @@ class HomeTableViewController: UITableViewController, UISearchBarDelegate, NSFet
                     mapa.aluno = alunoSelecionado
                     self.navigationController?.pushViewController(mapa, animated: true)
                     break
+                case .abrirPaginaWeb:
+                    if let urlDoAluno = alunoSelecionado.site {
+                        var urlFormatada = urlDoAluno
+                        
+                        if !urlFormatada.hasPrefix("http://"){
+                            urlFormatada = String(format: "http://%@", urlFormatada)
+                        }
+                        guard let url = URL(string: urlFormatada) else {return}
+                        let safariViewController = SFSafariViewController(url: url)
+                        self.present(safariViewController, animated: true, completion: nil)
+                    }
+                    break
                 }
             }
             self.present(menu, animated: true, completion: nil)
@@ -124,6 +149,14 @@ class HomeTableViewController: UITableViewController, UISearchBarDelegate, NSFet
         }
     }
     
+    @IBAction func buttonLocalizacaoAtual(_ sender: UIBarButtonItem) {
+        let mapa = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "mapa") as! MapaViewController
+        
+        navigationController?.pushViewController(mapa, animated: true)
+        
+    }
+    
+    
     
     // MARK: - Table view data source
     
@@ -135,6 +168,7 @@ class HomeTableViewController: UITableViewController, UISearchBarDelegate, NSFet
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "celula-aluno", for: indexPath) as! HomeTableViewCell
+        cell.tag = indexPath.row
         
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(abrirActionSheet))
         
@@ -153,24 +187,34 @@ class HomeTableViewController: UITableViewController, UISearchBarDelegate, NSFet
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             
-            guard let alunoSelecionado = gerenciadorDeResultados?.fetchedObjects?[indexPath.row] else { return }
-            contexto.delete(alunoSelecionado)
-            
-            do {
-                try contexto.save()
-            } catch {
-                print(error.localizedDescription)
+            AutenticacaoLocal().autorizaUsuario { (autenticado) in
+                if autenticado {
+                    DispatchQueue.main.async {
+                        guard let alunoSelecionado = self.gerenciadorDeResultados?.fetchedObjects?[indexPath.row] else { return }
+                        self.contexto.delete(alunoSelecionado)
+                        do {
+                            try self.contexto.save()
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+                    }
+                }
             }
-
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let alunoSelecionado = gerenciadorDeResultados?.fetchedObjects![indexPath.row] else { return }
         alunoViewController?.aluno = alunoSelecionado
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        guard let nomeAluno =  searchBar.text else { return }
+        recuperaAluno(nomeAluno)
+        tableView.reloadData()
     }
     
 }
